@@ -1,0 +1,125 @@
+buildscript {
+    repositories {
+        mavenCentral()
+//        maven { url 'http://download.crashlytics.com/maven' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.7.+'
+//        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+    }
+}
+apply plugin: 'android'
+//apply plugin: 'crashlytics'
+
+repositories {
+    mavenCentral()
+    maven { url 'http://download.crashlytics.com/maven' }
+    maven { url 'http://repo.springsource.org/release' }
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.0'
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+    }
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 19
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../test.keystore')
+            storePassword 'thisistest'
+            keyAlias 'testkey'
+            keyPassword 'thisistest'
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            buildConfigField "${rootProject.defaultPackageName}.type.BuildType", "buildType", "${rootProject.defaultPackageName}.type.BuildType.DEBUG"
+        }
+
+        release {
+            debuggable false
+            buildConfigField "${rootProject.defaultPackageName}.type.BuildType", "buildType", "${rootProject.defaultPackageName}.type.BuildType.RELEASE"
+            jniDebugBuild false
+            signingConfig signingConfigs.release
+            runProguard false
+        }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/res/assets']
+        }
+    }
+}
+
+ext.daggerVersion = '1.0.0';
+
+configurations {
+    apt
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:19.0.0'
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.loopj.android:android-async-http:1.4.4'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.1'
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile 'org.codehaus.jackson:jackson-core-asl:1.9.13'
+    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
+    compile files('libs/Parse-1.3.9/Parse-1.3.9.jar')
+    compile files('libs/GoogleAnalyticsServicesAndroid_3.01/libGoogleAnalyticsServices.jar')
+    compile files('libs/Flurry_Android_SDK_vAndroid_3.3.2/Android_3.3.2/FlurryAnalytics/FlurryAnalytics_3.3.2.jar')
+    compile 'com.crashlytics.android:crashlytics:1.+'
+    compile 'net.eunjae.android.aevent:AEvent:1.0.1'
+    compile 'net.eunjae.android.modelmapper:ModelMapper:1.0.1'
+
+    apt files('libs/androidannotations-bundle-3.0/androidannotations-3.0.jar')
+    compile files('libs/androidannotations-bundle-3.0/androidannotations-api-3.0.jar')
+    apt "com.squareup.dagger:dagger-compiler:${daggerVersion}"
+    compile "com.squareup.dagger:dagger:${daggerVersion}"
+}
+
+def getSourceSetName(variant) {
+    return new File(variant.dirName).getName();
+}
+
+android.applicationVariants.all { variant ->
+
+    aptOutput = file("${project.buildDir}/source/apt_generated/${variant.dirName}")
+    println "****************************"
+    println "variant: ${variant.name}"
+    println "manifest:  ${variant.processResources.manifestFile}"
+    println "aptOutput:  ${aptOutput}"
+    println "****************************"
+
+    android.sourceSets[getSourceSetName(variant)].java.srcDirs += aptOutput.getPath()
+
+    variant.javaCompile.doFirst {
+        println "*** compile doFirst ${variant.name}"
+        aptOutput.mkdirs()
+        variant.javaCompile.options.compilerArgs += [
+                '-processorpath', configurations.apt.getAsPath(),
+                '-AandroidManifestFile=' + variant.processResources.manifestFile,
+                '-s', aptOutput
+        ]
+    }
+
+    variant.javaCompile.source = variant.javaCompile.source.filter { p ->
+        return !p.getPath().startsWith(aptOutput.getPath())
+    }
+}
