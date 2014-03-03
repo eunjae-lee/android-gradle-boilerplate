@@ -9,14 +9,15 @@ import com.crashlytics.android.Crashlytics;
 import com.parse.ParseAnalytics;
 import net.eunjae.android.boilerplate.BuildConfig;
 import net.eunjae.android.boilerplate.R;
+import net.eunjae.android.boilerplate.core.Const;
 import net.eunjae.android.boilerplate.core.PrefHelper;
-import net.eunjae.android.boilerplate.ui.activity.base.FragmentBaseActivity;
+import net.eunjae.android.boilerplate.ui.activity.base.BaseFragmentActivity;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends FragmentBaseActivity {
+public class MainActivity extends BaseFragmentActivity {
 
     @Bean
     PrefHelper prefHelper;
@@ -30,7 +31,7 @@ public class MainActivity extends FragmentBaseActivity {
 
     private void initThirdParty() {
         ParseAnalytics.trackAppOpened(getIntent());
-        if (BuildConfig.buildType.isRelease()) {
+        if (Const.USE_CRASHLYTICS && BuildConfig.buildType.isRelease()) {
             Crashlytics.start(this);
         }
     }

@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentActivity;
 
 import net.eunjae.android.boilerplate.ui.fragment.SimplePlaceholderFragment;
 
-public class FragmentBaseActivity extends FragmentActivity {
+public class BaseFragmentActivity extends FragmentActivity {
 
     protected void setActivityFragment(Bundle savedInstanceState, int containerResId, int layoutResId) {
         if (savedInstanceState == null) {

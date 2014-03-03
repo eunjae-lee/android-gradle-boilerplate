@@ -13,13 +13,13 @@ import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 
 import net.eunjae.android.boilerplate.R;
-import net.eunjae.android.boilerplate.ui.activity.StartActivity_;
+import net.eunjae.android.boilerplate.ui.activity.SplashActivity_;
 
 public class NotificationUtil {
 
     public static void showNotification(Context context) {
 		Context applicationContext = context.getApplicationContext();
-		Intent intent = new Intent(applicationContext, StartActivity_.class);
+		Intent intent = new Intent(applicationContext, SplashActivity_.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(applicationContext, 0,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
