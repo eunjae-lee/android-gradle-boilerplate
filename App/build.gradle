@@ -76,11 +76,8 @@ configurations {
 dependencies {
     compile 'com.android.support:support-v4:19.0.0'
     compile 'com.android.support:appcompat-v7:+'
-    compile 'com.loopj.android:android-async-http:1.4.4'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.1'
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
-    compile 'org.codehaus.jackson:jackson-core-asl:1.9.13'
-    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile files('libs/Parse-1.3.9/Parse-1.3.9.jar')
     compile files('libs/GoogleAnalyticsServicesAndroid_3.01/libGoogleAnalyticsServices.jar')
     compile files('libs/Flurry_Android_SDK_vAndroid_3.3.2/Android_3.3.2/FlurryAnalytics/FlurryAnalytics_3.3.2.jar')
